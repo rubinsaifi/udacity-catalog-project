@@ -51,8 +51,10 @@ bash vagrant ssh
 ```
 5. Go to Vagrant folder `cd /vagrant` and clone this repo
 6. Install Flask and run `database_setup.py`
-```sudo apt-get install python3
-python database_setup.py```
+```
+sudo apt-get install python3
+python database_setup.py
+```
 7. Run db popular
 ```python lotsofmenus.py```
 8. Run the app
