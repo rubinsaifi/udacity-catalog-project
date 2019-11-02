@@ -1,0 +1,72 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class="row top-menu">
+		<!--<div class="col-md-10"></div>
+    <div class="col-md-2 text-right"></div>
+    -->
+  </div>
+	<div class="row banner menu">
+  <!--<div class="row banner main">-->
+		<div class="col-md-1"></div>
+		<div class="col-md-11 padding-none">
+			<h1>Sports Catalog</h1>
+		</div>
+	</div>
+
+<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
+  
+<div class="row padding-top padding-bottom">
+<div class="col-md-5 padding-none">
+    {% if 'username' in session %}
+    <a href="{{url_for('newSport')}}">
+				<!--<button class="btn btn-default" id="new-sport">
+          <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>
+        -->  
+          Add Sport
+				<!--</button>-->
+      </a>
+    {% endif %}
+  <p>Sports Categories</p>
+  {% for sp in sport %}
+		<a href = "{{url_for('showMenu', sport_id = sp.id)}}">
+			<div class="row">
+					<div class="col-md-1">
+						<h3>{{sp.name}}</h3>
+					</div>
+				<div class="col-md-1"></div>
+			</div>
+    </a>
+
+  {% endfor %}
+</div>
+<div class="col-md-7 padding-none">
+
+<p>Latest Items</p>
+{% for item in items %}
+		<!--<a href = "{{url_for('showItem', item_id = item.id)}}">-->
+			<div class="row menu-item">
+				<div class="col-md-1"></div>
+					<div class="col-md12">
+						<h3>{{item.name}}</h3>
+					</div>
+				<div class="col-md-1"></div>
+			</div>
+		<!--</a>-->
+  {% endfor %}
+</div>  
+</div>
+{% endblock %}
