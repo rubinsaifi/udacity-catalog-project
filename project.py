@@ -37,7 +37,11 @@ session = DBSession()
 # login route
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    state = ''.join(
+        random.choice(
+            string.ascii_uppercase + string.digits
+        ) for x in range(32)
+    )
     login_session['state'] = state
     # return 'Current session state - %s' % state
     return render_template('login.html', STATE=state)
@@ -74,7 +78,8 @@ def gconnect():
     access_token = credentials.access_token
     print(access_token)
     url = (
-      'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token
+        "https://www.googleapis.com/oauth2/v1/tokeninfo?access_"
+        "token=%s" % access_token
     )
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1].decode('utf-8'))
@@ -191,7 +196,10 @@ def gdisconnect():
     print('Token: %s' % access_token)
     print('User: %s' % login_session['username'])
 
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = (
+            "https://accounts.google.com/o/oauth2/revoke?"
+            "token=%s" % login_session['access_token']
+    )
     h = httplib2.Http()
     _result_ = h.request(url, 'GET')
     result_resp = json.loads(_result_[1].decode('utf-8'))
@@ -216,7 +224,8 @@ def gdisconnect():
         return response
     else:
         # Something wrong with disconnect
-        if result['status'] == '400' and result_resp['error_description'] == 'Token expired or revoked':
+        err_dsc = result_resp['error_description']
+        if result['status'] == '400' and err_dsc == 'Token expired or revoked':
             response = make_response(
                 json.dumps(
                     'Token already expired or revoked'
@@ -334,7 +343,15 @@ def showItem():
 def editSport(sport_id):
     if 'username' not in login_session:
         return redirect('/login')
+
     editedSport = session.query(Sport).filter_by(id=sport_id).one()
+
+    if login_session['user_id'] != editedSport.user_id:
+        flash(
+           "Sport category was created by another user "
+           "and can't be edited by others"
+        )
+        return redirect(url_for('showSports', sport=editedSport))
     if request.method == 'POST':
         if request.form['name']:
             editedSport.name = request.form['name']
@@ -350,6 +367,14 @@ def deleteSport(sport_id):
     if 'username' not in login_session:
         return redirect('/login')
     sportToDelete = session.query(Sport).filter_by(id=sport_id).one()
+
+    if login_session['user_id'] != sportToDelete.user_id:
+        flash(
+            "Sport category was created by another user "
+            "and can't be edited by others"
+        )
+        return redirect(url_for('showSports', sport_id=sport_id))
+
     if request.method == 'POST':
         session.delete(sportToDelete)
         flash('%s Successfully Deleted' % sportToDelete.name)
@@ -365,12 +390,15 @@ def newMenuItem(sport_id):
     if 'username' not in login_session:
         return redirect('/login')
     sport = session.query(Sport).filter_by(id=sport_id).one()
+
+
     if request.method == 'POST':
         newItem = MenuItem(
             name=request.form['name'],
             description=request.form['description'],
             price=request.form['price'],
-            sport_id=sport_id
+            sport_id=sport_id,
+            user_id=login_session['user_id']
         )
         session.add(newItem)
         session.commit()
@@ -388,7 +416,13 @@ def newMenuItem(sport_id):
 def editMenuItem(sport_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
+
     editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
+    print(login_session['user_id'], editedItem.user_id)
+    if login_session['user_id'] != editedItem.user_id:
+        flash("Item was created by another user and can't be edited by others")
+        return redirect(url_for('showMenu', sport_id=sport_id))
+    
     # sport = session.query(Sport).filter_by(id=sport_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -422,6 +456,11 @@ def deleteMenuItem(sport_id, menu_id):
         return redirect('/login')
     # sport = session.query(Sport).filter_by(id = sport_id).one()
     itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
+    
+    if login_session['user_id'] != itemToDelete.user_id:
+        flash("Item was created by another user and can't be edited by others")
+        return redirect(url_for('showMenu', sport_id=sport_id))
+
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
