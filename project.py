@@ -391,7 +391,6 @@ def newMenuItem(sport_id):
         return redirect('/login')
     sport = session.query(Sport).filter_by(id=sport_id).one()
 
-
     if request.method == 'POST':
         newItem = MenuItem(
             name=request.form['name'],
@@ -422,7 +421,7 @@ def editMenuItem(sport_id, menu_id):
     if login_session['user_id'] != editedItem.user_id:
         flash("Item was created by another user and can't be edited by others")
         return redirect(url_for('showMenu', sport_id=sport_id))
-    
+
     # sport = session.query(Sport).filter_by(id=sport_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -456,7 +455,7 @@ def deleteMenuItem(sport_id, menu_id):
         return redirect('/login')
     # sport = session.query(Sport).filter_by(id = sport_id).one()
     itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
-    
+
     if login_session['user_id'] != itemToDelete.user_id:
         flash("Item was created by another user and can't be edited by others")
         return redirect(url_for('showMenu', sport_id=sport_id))

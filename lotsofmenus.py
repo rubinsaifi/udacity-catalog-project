@@ -153,7 +153,7 @@ menuItem3 = MenuItem(
   name="Stumps",
   description=(
    "three upright wooden poles that, together with the bails, "
-    "form the wicket."
+   "form the wicket."
   ),
   price="$16.99",
   sport_item="stump",
