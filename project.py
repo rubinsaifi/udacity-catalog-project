@@ -181,6 +181,7 @@ def logout():
         flash("You were not logged in!")
         return redirect(url_for('showSports'))
 
+
 # disconnect
 @app.route('/gdisconnect', methods=['GET'])
 def gdisconnect():
@@ -267,6 +268,7 @@ def getUserID(email):
         return None
 
 # end of local permission system
+
 
 # JSON APIs to view Sport Information
 @app.route('/sport/<int:sport_id>/menu/JSON')
